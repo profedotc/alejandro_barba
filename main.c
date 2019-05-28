@@ -1,85 +1,127 @@
+// HEADERS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-void gol_init(/* Recibo un mundo */);
-void gol_print(/* Recibo un mundo */);
-void gol_step(/* Recibo dos mundos */);
-int gol_count_neighbors(/* Recibo un mundo y unas coordenadas */);
-bool gol_get_cell(/* Recibo un mundo y unas coordenadas */);
-void gol_copy(/* Recibo dos mundos */);
+// MACROS
+// sx, sy = size of the coordinates x and y, respectively
+#define sx 10
+#define sy 10
 
-int main()
-{
-	int i = 0;
-	// TODO: Declara dos mundos
+// FUNCTIONS
+// mw, aw = main and auxiliary worlds, respectively
+void gol_init(int mw[sx][sy]);
+void gol_print(int mw[sx][sy]);
+void gol_step(int mw[sx][sy], int aw[sx][sy]);
+int gol_count_neighbors(int mw[sx][sy], int x, int y);
+bool gol_get_cell(int mw[sx][sy], int x, int y);
+void gol_copy(int mw[sx][sy], int aw[sx][sy]);
 
-	// TODO: inicializa el mundo
-	do {
-		printf("\033cIteration %d\n", i++);
-		// TODO: Imprime el mundo
-		// TODO: Itera
-	} while (getchar() != 'q');
+// Parts of the task
 
-	return EXIT_SUCCESS;
+// 1st Part
+int main ()
+{          
+	       int i = 0;
+	       
+           int mw[sx][sy];
+           int aw[sx][sy];
+           
+           gol_init(mw);
+           
+           do {
+                 printf("\033cIteration %d\n", i++);
+                 gol_print(mw);
+                 gol_step(mw, aw);
+
+           }  while (getchar() != 'q');
+              
+              return EXIT_SUCCESS;
 }
 
-void gol_init(/* Recibo un mundo */)
+// 2nd Part
+void gol_init(int mw[sx][sy])
 {
-	// TODO: Poner el mundo a false
-
-	/* TODO: Inicializar con el patrón del glider:
-	 *           . # .
-	 *           . . #
-	 *           # # #
-	 */
+     for (int x = 0; x < sx; x++) {
+     for (int y = 0; y < sy; y++) {
+         mw[x][y] = 0;
+     }     
+     }         
+     // Initial pattern
+        mw[0][1] = 1;
+        mw[1][2] = 1;
+        mw[2][0] = 1;
+        mw[2][1] = 1;
+        mw[2][2] = 1;
 }
 
-void gol_print(/* Recibo un mundo */)
+// 3rd Part
+void gol_print(int mw[sx][sy])
 {
-	// TODO: Imprimir el mundo por consola. Sugerencia:
-	/*
-	 *     . # . . . . . . . .
-	 *     . . # . . . . . . .
-	 *     # # # . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 */
+     for (int x = 0; x < sx; x++) {
+     for (int y = 0; y < sy; y++) {
+         printf("%c ", mw[x][y]? '#' : '.');
+     }
+         printf("\n");
+     }
 }
 
-void gol_step(/* Recibo dos mundos */)
-{
-	/*
-	 * TODO:
-	 * - Recorrer el mundo célula por célula comprobando si nace, sobrevive
-	 *   o muere.
-	 *
-	 * - No se puede cambiar el estado del mundo a la vez que se recorre:
-	 *   Usar un mundo auxiliar para guardar el siguiente estado.
-	 *
-	 * - Copiar el mundo auxiliar sobre el mundo principal
-	 */
+// 4th Part
+// an = alive neighbors
+void gol_step(int mw[sx][sy], int aw[sx][sy])
+{         
+	 int an = 0;
+     
+     for (int x = 0; x < sx; x++) {
+     for (int y = 0; y < sy; y++) {
+         
+         an = gol_count_neighbors(mw, x, y);
+         
+         if (mw[x][y]) {
+                // Survival condition
+                   aw[x][y] = (an == 2) || (an == 3);
+         } else {      
+                // Resurrection condition
+                   aw[x][y] = (an == 3);
+           }
+     }      
+     }
+     gol_copy(aw, mw);
 }
 
-int gol_count_neighbors(/* Recibo un mundo y unas coordenadas */)
+// 5th Part
+// anc = alive neighbors counter
+int gol_count_neighbors(int mw[sx][sy], int x, int y)
 {
-	// Devuelve el número de vecinos
+     int anc = -mw[x][y];
+     
+     for (int i = x-1; i <= x+1; i++) {
+     for (int j = x-1; j <= y+1; j++) {
+         
+         anc += mw[i][j];
+     }
+     }
+     return anc;     
 }
 
-bool gol_get_cell(/* Recibo un mundo y unas coordenadas */)
+// 6th Part
+bool gol_get_cell(int mw[sx][sy], int x, int y)
 {
-	/*
-	 * TODO: Devuelve el estado de la célula de posición indicada
-	 * (¡cuidado con los límites del array!)
-	 */
+          if (x >= 0 && y >= 0 && x < sx && y < sy) {
+             return mw[x][y];
+          } else {
+                  return 0; 
+            }
 }
 
-void gol_copy(/* Recibo dos mundos */)
+// 7th Part
+void gol_copy(int mw[sx][sy], int aw[sx][sy])
 {
-	// TODO: copia el mundo segundo mundo sobre el primero
+     for (int x = 0; x < sx; x++) {
+     for (int y = 0; y < sy; y++) {
+                          
+     mw[x][y] = aw[x][y];
+     
+     }
+     }
 }
