@@ -2,7 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "gol.h"
-// FUNCTIONS GOL
+// NEW FUNCTIONS
+static int count_neighbors(struct gol *g, int x, int y);
+static bool get_cell(struct gol *g, int x, int y);
+// FUNCTIONS
 // 1st Function
 // w = worlds; cw = current world;
 void gol_init(struct gol *g)
@@ -37,7 +40,7 @@ void gol_step(struct gol *g)
     int aw = !g->cw;
     for (int x = 0; x < SX; x++) {
         for (int y = 0; y < SY; y++) {
-            int an = gol_count_neighbors(g, x, y);
+            int an = count_neighbors(g, x, y);
             if (g->w[g->cw][x][y]) {
                 // Survival condition
                     g->w[aw][x][y] = (an == 2) || (an == 3);
@@ -51,12 +54,12 @@ void gol_step(struct gol *g)
 }
 // 4th Function
 // anc = alive neighbors counter
-int gol_count_neighbors(struct gol *g, int x, int y)
+static int count_neighbors(struct gol *g, int x, int y)
 {
     int anc = 0;
         for (int i = x-1; i <= x+1; i++) {
             for (int j = x-1; j <= y+1; j++) {
-                if (gol_get_cell(g, i, j)) {
+                if (get_cell(g, i, j)) {
                     if ((i == x && j != y) || (i != x && j == y) || (i != x && j != y)) {
                         anc ++;
                     }
@@ -66,7 +69,7 @@ int gol_count_neighbors(struct gol *g, int x, int y)
                 return anc;     
 }
 // 5th Function
-bool gol_get_cell(struct gol *g, int x, int y)
+static bool get_cell(struct gol *g, int x, int y)
 {
     if (x >= 0 && y >= 0 && x < SX && y < SY) {
         return g->w[g->cw][x][y];
