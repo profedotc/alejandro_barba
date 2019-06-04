@@ -6,12 +6,16 @@
 #define _GOL_H_
 #define SX 10
 #define SY 10
+// STRUCTURE
+// w = worlds; cw = current world;
+struct gol
+{
+    bool w[SX][SY][2];
+    bool cw;
+};
 // FUNCTIONS
-// mw, aw = main and auxiliary worlds, respectively
-void gol_init(bool mw[][SX][SY]);
-void gol_print(bool mw[][SX][SY], bool aw);
-void gol_step(bool mw[][SX][SY], bool aw);
-int gol_count_neighbors(bool mw[][SX][SY], int x, int y, bool aw);
-bool gol_get_cell(bool mw[][SX][SY], int x, int y, bool aw);
+void gol_init(struct gol *g);
+void gol_print(struct gol *g);
+void gol_step(struct gol *g);
 // END
 #endif

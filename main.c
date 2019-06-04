@@ -5,16 +5,15 @@
 #include "gol.h"
 // MAIN
 int main ()
-{          
-	       int i = 0;
-	       int aw = 0;
-	       bool mw[2][SX][SY];
-	       gol_init(mw);
-           do {
-                 printf("\033cIteration %d\n", i++);
-                 gol_print(mw, aw);
-                 gol_step(mw, aw);
-                 aw = !aw;
-           }  while (getchar() != 'q');
-              return EXIT_SUCCESS;
+{
+            int i = 0;
+            struct gol g;
+            gol_init(&g);
+            do 
+            {
+                printf("\033cIteration %d\n", i++);
+                gol_print(&g);
+                gol_step(&g);
+            }   while (getchar() != 'q');
+            return EXIT_SUCCESS;
 }

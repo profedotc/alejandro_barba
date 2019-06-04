@@ -1,3 +1,3 @@
-// Se ignoran los productos de la compilación
+# Se ignoran los productos de la compilación
 *.o
 exe
