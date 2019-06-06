@@ -1,79 +1,107 @@
 // HEADERS
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
-#include "gol.h"
-// NEW FUNCTIONS
-static int count_neighbors(struct gol *g, int x, int y);
-static bool get_cell(struct gol *g, int x, int y);
+#include "gol_42.h"
+// cw, nw = current and next worlds, respectively; w = world; ws = worlds;
+// ENUMERATION
+enum w_type {cw, nw};
+// STATIC FUNCTIONS
+static bool get_cell(const struct gol *g, int x, int y);
+static int count_neighbors(const struct gol *g, int x, int y);
 // FUNCTIONS
 // 1st Function
-// w = worlds; cw = current world;
 void gol_init(struct gol *g)
 {
-    for (int x = 0; x < SX; x++) {
-        for (int y = 0; y < SY; y++) {
-            g->w[x][y][0] = 0;
-            // Initial pattern
-            g->w[0][1][0] = 1;
-            g->w[1][2][0] = 1;
-            g->w[2][0][0] = 1;
-            g->w[2][1][0] = 1;
-            g->w[2][2][0] = 1;
+    for (int x = 0; x < g->SX; x++) {
+        for (int y = 0; y < g->SY; y++) { 
+            g->ws[cw][x][y] = 0;
         }
     }
-    g->cw = 0;
+            // Initial pattern
+            g->ws[cw][0][1] = 1;
+            g->ws[cw][1][2] = 1;
+            g->ws[cw][2][0] = 1;
+            g->ws[cw][2][1] = 1;
+            g->ws[cw][2][2] = 1;
 }
 // 2nd Function
-void gol_print(struct gol *g)
+void gol_print(const struct gol *g)
 {
-    for (int x = 0; x < SX; x++) {
-        for (int y = 0; y < SY; y++) {
-            printf("%c ", g->w[g->cw][x][y]? '#' : '.');
+    for (int x = 0; x < g->SX; x++) {
+        for (int y = 0; y < g->SY; y++) {
+            printf("%c ", g->ws[cw][x][y]? '#' : '.');
         }
         printf("\n");
     }
 }
 // 3rd Function
-// an = alive neighbors; aw = auxiliary world;
+// an = aive neighbors;
 void gol_step(struct gol *g)
 {
-    int aw = !g->cw;
-    for (int x = 0; x < SX; x++) {
-        for (int y = 0; y < SY; y++) {
+    bool **swap;
+    for (int x = 0; x < g->SX; x++) {
+        for (int y = 0; y < g->SY; y++) {
             int an = count_neighbors(g, x, y);
-            if (g->w[g->cw][x][y]) {
+            if (g->ws[cw][x][y]) {
                 // Survival condition
-                    g->w[aw][x][y] = (an == 2) || (an == 3);
+                    g->ws[nw][x][y] = (an == 2) || (an == 3);
             }   else {      
                     // Resurrection condition
-                    g->w[aw][x][y] = (an == 3);
+                    g->ws[nw][x][y] = (an == 3);
                 }
         }      
     }
-    g->cw = !g->cw;
+swap = g->ws[cw];
+g->ws[cw] = g->ws[nw];
+g->ws[nw] = swap;
 }
 // 4th Function
-// anc = alive neighbors counter
-static int count_neighbors(struct gol *g, int x, int y)
+bool gol_alloc(struct gol *g, int SX, int SY)
 {
-    int anc = 0;
-        for (int i = x-1; i <= x+1; i++) {
-            for (int j = x-1; j <= y+1; j++) {
-                if (get_cell(g, i, j)) {
-                    if ((i == x && j != y) || (i != x && j == y) || (i != x && j != y)) {
-                        anc ++;
-                    }
-                }
+        for (int w = cw; w <= nw; w++) {
+            g->ws[w] = malloc(SX * sizeof(bool*));
+            if (!g->ws[w])
+                return 0;
+// r = row;
+            for (int r = 0; r < SX; r++) {
+                g->ws[w][r] = malloc(SY * sizeof(bool));
+                if (!g->ws[w][r])
+                return 0;
             }
         }
-                return anc;     
+        g->SX = SX;
+        g->SY = SY;
+        return 1;
 }
 // 5th Function
-static bool get_cell(struct gol *g, int x, int y)
+void gol_free(struct gol *g)
 {
-    if (x >= 0 && y >= 0 && x < SX && y < SY) {
-        return g->w[g->cw][x][y];
+    for (int w = cw; w <= nw; w++) {
+        for (int r = 0; r < g->SX; r++)
+            free(g->ws[w][r]);
+        free(g->ws[w]);
+    }
+}
+// STATIC FUNCTIONS
+// 1st Function
+static bool get_cell(const struct gol *g, int x, int y)
+{
+    if (x >= 0 && y >= 0 && x < g->SX && y < g->SY) {
+        return g->ws[cw][x][y];
     }   else {
                 return 0; 
         }
+}
+// 2nd Function
+// anc = alive neighbors counter
+static int count_neighbors(const struct gol *g, int x, int y)
+{
+    int anc = -get_cell(g, x, y);
+        for (int i = x-1; i <= x+1; i++) {
+            for (int j = x-1; j <= y+1; j++) {
+                        anc ++;
+            }   
+        }
+                return anc;     
 }
