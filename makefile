@@ -11,14 +11,14 @@ release : exe
 debug : CFLAGS += -g -O0
 debug : exe
 
-exe: main_42.o gol_42.o
-		$(CC) main_42.o gol_42.o -o exe
+exe: main.o gol.o
+		$(CC) main.o gol.o -o exe
         
-main_42.o: main_42.c gol_42.h
-		$(CC) -c main_42.c
+main.o: main.c gol.h
+		$(CC) -c main.c
         
-gol_42.o: gol_42.c gol_42.h
-		$(CC) -c gol_42.c
+gol.o: gol.c gol.h
+		$(CC) -c gol.c
         
 clean:
 		rm *.o
