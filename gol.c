@@ -1,7 +1,6 @@
 // HEADERS
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "gol.h"
 // CW, NW = Current and Next Worlds, respectively; w = world; ws = worlds;
 // ENUMERATION
@@ -18,15 +17,17 @@ void gol_alloc(struct gol *g, int sx, int sy)
 {
     g->ws[CW] = (bool **)malloc(sx * sizeof(bool*));
     g->ws[NW] = (bool **)malloc(sx * sizeof(bool*));
-    for (int k = 0; k < sy; k++) {
+    for (int k = 0; k < sx; k++) {
         g->ws[CW][k] = (bool *)malloc(sy * sizeof(bool));
         g->ws[NW][k] = (bool *)malloc(sy * sizeof(bool));
     }
+    g->sx = sx;
+    g->sy = sy;
 }
 // 2nd Function
-void gol_free(struct gol *g, int sy)
+void gol_free(struct gol *g)
 {
-    for (int k = 0; k < sy; k++) {
+    for (int k = 0; k < g->sx; k++) {
         free(g->ws[NW][k]);
         free(g->ws[CW][k]); 
     }
@@ -34,10 +35,10 @@ void gol_free(struct gol *g, int sy)
     free(g->ws[CW]);
 }
 // 3rd Function
-void gol_init(struct gol *g, int sx, int sy)
+void gol_init(struct gol *g)
 {
-    for (int x = 0; x < sx; x++) {
-        for (int y = 0; y < sy; y++) { 
+    for (int x = 0; x < g->sx; x++) {
+        for (int y = 0; y < g->sy; y++) { 
             g->ws[CW][x][y] = 0;
         }
     }
@@ -49,10 +50,10 @@ void gol_init(struct gol *g, int sx, int sy)
             g->ws[CW][2][2] = 1;
 }
 // 4th Function
-void gol_print(struct gol *g, int sx, int sy)
+void gol_print(struct gol *g)
 {
-    for (int x = 0; x < sx; x++) {
-        for (int y = 0; y < sy; y++) {
+    for (int x = 0; x < g->sx; x++) {
+        for (int y = 0; y < g->sy; y++) {
             printf("%c ", g->ws[CW][x][y]? '#' : '.');
         }
         printf("\n");
@@ -62,8 +63,8 @@ void gol_print(struct gol *g, int sx, int sy)
 // an = aive neighbors;
 void gol_step(struct gol *g)
 {
-    for (int x = 0; x < SX; x++) {
-        for (int y = 0; y < SY; y++) {
+    for (int x = 0; x < g->sx; x++) {
+        for (int y = 0; y < g->sy; y++) {
             int an = count_neighbors(g, x, y);
             if (g->ws[CW][x][y]) {
                 // Survival condition
@@ -86,14 +87,14 @@ static int count_neighbors(const struct gol *g, int x, int y)
     int anc = 0;
     
     anc += get_cell(g, x - 1, y + 1);
-    anc += get_cell(g, x - 0, y + 1);
+    anc += get_cell(g, x, y + 1);
     anc += get_cell(g, x + 1, y + 1);
     
-    anc += get_cell(g, x - 1, y + 0);
-    anc += get_cell(g, x + 1, y + 0);
+    anc += get_cell(g, x - 1, y);
+    anc += get_cell(g, x + 1, y);
     
     anc += get_cell(g, x - 1, y - 1);
-    anc += get_cell(g, x - 0, y - 1);
+    anc += get_cell(g, x, y - 1);
     anc += get_cell(g, x + 1, y - 1);
     
     return anc;         
@@ -101,13 +102,13 @@ static int count_neighbors(const struct gol *g, int x, int y)
 // 2nd Function
 static bool get_cell(const struct gol *g, int x, int y)
 {
-     if(x >= SX)
+     if(x >= g->sx)
         x = 0;
     else if (x < 0)
-        x = SX - 1;
-    if(y >= SY)
+        x = g->sx - 1;
+    if(y >= g->sy)
         y = 0;
     else if (y <0)
-        y = SY - 1;
+        y = g->sy - 1;
     return g->ws[CW][x][y];
 }
