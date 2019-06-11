@@ -3,21 +3,23 @@ CFLAGS = -Wall -Wextra -std=c99
 
 .PHONY: all debug release clean
 
-// Se crea un makefile para compilar y limpiar el repositorio
-
 all: debug
 
-release: CFLAGS += -O3
-release: exe
+release : CFLAGS += -g -O3
+release : exe
 
-debug: CFLAGS += -g -O0
-debug: exe
+debug : CFLAGS += -g -O0
+debug : exe
 
-exe: main.o gol.o
-		$(CC) main.o gol.o -o exe
-main.o: main.c gol.h
-		$(CC) -c main.c
-gol.o: gol.h gol.c
-		$(CC) -c gol.c
+exe: main_42.o gol_42.o
+		$(CC) main_42.o gol_42.o -o exe
+        
+main_42.o: main_42.c gol_42.h
+		$(CC) -c main_42.c
+        
+gol_42.o: gol_42.c gol_42.h
+		$(CC) -c gol_42.c
+        
 clean:
-		rm *.o exe
+		rm *.o
+		rm exe
