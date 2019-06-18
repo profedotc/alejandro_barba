@@ -1,13 +1,25 @@
-.PHONY: all clean
+CC = gcc $(CFLAGS)
+CFLAGS = -Wall -Wextra -std=c99
 
-// Se crea un makefile para compilar y limpiar el repositorio
-all: exe
+.PHONY: all debug release clean
+
+all: debug
+
+release : CFLAGS += -g -O3
+release : exe
+
+debug : CFLAGS += -g -O0
+debug : exe
 
 exe: main.o gol.o
-		gcc main.o gol.o -o exe
+		$(CC) main.o gol.o -o exe
+        
 main.o: main.c gol.h
-		gcc -c main.c
-gol.o: gol.h gol.c
-		gcc -c gol.c
+		$(CC) -c main.c
+        
+gol.o: gol.c gol.h
+		$(CC) -c gol.c
+        
 clean:
-		rm *.o exe
+		rm *.o
+		rm exe
