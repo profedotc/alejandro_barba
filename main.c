@@ -1,7 +1,6 @@
 // HEADERS
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "gol.h"
 // MACROS
 // SX, SY = size of the coordinates X and Y, respectively

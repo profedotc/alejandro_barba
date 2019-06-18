@@ -6,12 +6,12 @@
 // ws = worlds;
 struct gol
 {
-    bool **ws[2];
+    bool *ws[2];
     int sx;
     int sy;
 };
 // FUNCTIONS
-void gol_alloc(struct gol *g, int sx, int sy);
+bool gol_alloc(struct gol *g, int sx, int sy);
 void gol_free(struct gol *g);
 void gol_init(struct gol *g);
 void gol_print(struct gol *g);
