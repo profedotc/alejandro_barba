@@ -11,7 +11,10 @@ int main ()
 {
         int i = 0;
         struct gol g;
-        gol_alloc(&g, SX, SY);
+        if (!gol_alloc(&g, SX, SY)) {
+            fprintf(stderr, "ERROR: Could not allocate memory\n");
+            exit(EXIT_FAILURE);
+        }
         gol_init(&g);
         do 
         {
