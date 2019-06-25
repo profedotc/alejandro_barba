@@ -6,6 +6,7 @@
 // ws = worlds;
 struct gol
 {
+    bool *k;
     bool *ws[2];
     int sx;
     int sy;

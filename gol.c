@@ -18,22 +18,20 @@ static void set_cell(struct gol *g, enum world_type wt, int x, int y, bool a);
 // 1st Function
 bool gol_alloc(struct gol *g, int sx, int sy)
 {
-    for (int k = CW; k <= NW; k++) {
-        g->ws[k] = (bool *)malloc(sx * sy * sizeof(bool));
-        if (!g->ws[k]) {
-            return 0;
-        }
+    g->k = (bool *)malloc(2 * sx * sy * sizeof(bool));
+    if (!g->k) { 
+    return 0;
     }
     g->sx = sx;
     g->sy = sy;
+    g->ws[CW] = g->k;
+    g->ws[NW] = g->k + sx * sy;
     return 1;
 }
 // 2nd Function
 void gol_free(struct gol *g)
 {
-    for (int k = CW; k <= NW; k++) {
-    free(g->ws[k]);
-    }
+    free(g->k);
 }
 // 3rd Function
 void gol_init(struct gol *g)
