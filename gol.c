@@ -1,8 +1,9 @@
 // HEADERS
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "gol.h"
+// MACRO
+#define GET_CELL(g, x, y) (g->ws[wt][x * g->sy + y])
 // CW, NW = Current and Next Worlds, respectively; w = world; ws = worlds;
 // ENUMERATION
 enum world_type {
@@ -11,27 +12,26 @@ enum world_type {
 };
 // STATIC FUNCTIONS
 static int count_neighbors(const struct gol *g, int x, int y);
-static bool get_cell(const struct gol *g, int x, int y);
+static bool get_cell(const struct gol *g, enum world_type wt, int x, int y);
 static void set_cell(struct gol *g, enum world_type wt, int x, int y, bool a);
 // FUNCTIONS
 // 1st Function
 bool gol_alloc(struct gol *g, int sx, int sy)
 {
-    for (int k = CW; k <= NW; k++) {
-        g->ws[k] = (bool *)malloc(sx * sy * sizeof(bool));
-        if (!g->ws[k]) 
-            return 0;
+    g->k = (bool *)malloc(2 * sx * sy * sizeof(bool));
+    if (!g->k) { 
+    return 0;
     }
     g->sx = sx;
     g->sy = sy;
+    g->ws[CW] = g->k;
+    g->ws[NW] = g->k + sx * sy;
     return 1;
 }
 // 2nd Function
 void gol_free(struct gol *g)
 {
-    for (int k = CW; k <= NW; k++) {
-    free(g->ws[k]);
-    }
+    free(g->k);
 }
 // 3rd Function
 void gol_init(struct gol *g)
@@ -53,7 +53,7 @@ void gol_print(struct gol *g)
 {
     for (int x = 0; x < g->sx; x++) {
         for (int y = 0; y < g->sy; y++) {
-            printf("%c ", get_cell(g, x, y)? '#' : '.');
+            printf("%c ", get_cell(g, CW, x, y)? '#' : '.');
         }
         printf("\n");
     }
@@ -65,7 +65,7 @@ void gol_step(struct gol *g)
     for (int x = 0; x < g->sx; x++) {
         for (int y = 0; y < g->sy; y++) {
             int an = count_neighbors(g, x, y);
-            if (get_cell(g, x, y)) {
+            if (get_cell(g, CW, x, y)) {
                 // Survival condition
                    bool a = (an == 2) || (an == 3);
                    set_cell(g, NW, x, y, a);
@@ -87,21 +87,21 @@ static int count_neighbors(const struct gol *g, int x, int y)
 {
     int anc = 0;
     
-    anc += get_cell(g, x - 1, y + 1);
-    anc += get_cell(g, x, y + 1);
-    anc += get_cell(g, x + 1, y + 1);
+    anc += get_cell(g, CW, x - 1, y + 1);
+    anc += get_cell(g, CW, x, y + 1);
+    anc += get_cell(g, CW, x + 1, y + 1);
     
-    anc += get_cell(g, x - 1, y);
-    anc += get_cell(g, x + 1, y);
+    anc += get_cell(g, CW, x - 1, y);
+    anc += get_cell(g, CW, x + 1, y);
     
-    anc += get_cell(g, x - 1, y - 1);
-    anc += get_cell(g, x, y - 1);
-    anc += get_cell(g, x + 1, y - 1);
+    anc += get_cell(g, CW, x - 1, y - 1);
+    anc += get_cell(g, CW, x, y - 1);
+    anc += get_cell(g, CW, x + 1, y - 1);
     
     return anc;         
 }
 // 2nd Function
-static bool get_cell(const struct gol *g, int x, int y)
+static bool get_cell(const struct gol *g, enum world_type wt, int x, int y)
 {
     if(x >= g->sx)
         x = 0;
@@ -111,10 +111,10 @@ static bool get_cell(const struct gol *g, int x, int y)
         y = 0;
     else if (y < 0)
         y = g->sy - 1;
-    return g->ws[CW][x * g->sy + y];
+    return GET_CELL(g, x, y);
 }
 // 3rd Function
 static void set_cell(struct gol *g, enum world_type wt, int x, int y, bool a)
 {
-    g->ws[wt][x * g->sy + y] = a;
+    GET_CELL(g, x, y) = a;
 }
