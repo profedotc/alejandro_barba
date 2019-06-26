@@ -14,7 +14,17 @@ enum world_type {
 static int count_neighbors(const struct gol *g, int x, int y);
 static bool get_cell(const struct gol *g, enum world_type wt, int x, int y);
 static void set_cell(struct gol *g, enum world_type wt, int x, int y, bool a);
-// STRUCTURE
+// STRUCTURES
+// ws = worlds;
+// 1st Structure
+struct gol
+{
+    bool *k;
+    bool *ws[2];
+    int sx;
+    int sy;
+};
+// 2nd Structure
 struct gol * gol_alloc(int sx, int sy)
 {
     struct gol *g = (struct gol *)malloc(sizeof(struct gol));

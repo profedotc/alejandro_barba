@@ -3,14 +3,7 @@
 // HEADERS
 #include <stdbool.h>
 // STRUCTURE
-// ws = worlds;
-struct gol
-{
-    bool *k;
-    bool *ws[2];
-    int sx;
-    int sy;
-};
+struct gol;
 // FUNCTIONS
 struct gol * gol_alloc(int sx, int sy);
 void gol_free(struct gol *g);
