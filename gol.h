@@ -12,7 +12,7 @@ struct gol
     int sy;
 };
 // FUNCTIONS
-bool gol_alloc(struct gol *g, int sx, int sy);
+struct gol * gol_alloc(int sx, int sy);
 void gol_free(struct gol *g);
 void gol_init(struct gol *g);
 void gol_print(struct gol *g);
