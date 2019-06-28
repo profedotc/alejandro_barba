@@ -7,17 +7,16 @@
 // I = Iterations
 #define I 1000
 #define SX 10
-#define SY 20
+#define SY 15
 // MAIN
 int main ()
 {
-    struct gol g;
-    gol_alloc(&g, SX, SY);
-    gol_init(&g);
+    struct gol *g;
+    g = gol_alloc(SX, SY);
+    gol_init(g);
     for (int i = 0; i < I; i++) {
-            gol_step(&g);
+            gol_step(g);
     }
-        gol_free(&g);
-        
+        gol_free(g);
         return EXIT_SUCCESS;
 }
