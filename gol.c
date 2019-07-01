@@ -14,26 +14,41 @@ enum world_type {
 static int count_neighbors(const struct gol *g, int x, int y);
 static bool get_cell(const struct gol *g, enum world_type wt, int x, int y);
 static void set_cell(struct gol *g, enum world_type wt, int x, int y, bool a);
-// FUNCTIONS
-// 1st Function
-bool gol_alloc(struct gol *g, int sx, int sy)
+// STRUCTURES
+// ws = worlds;
+// 1st Structure
+struct gol
 {
+    bool *k;
+    bool *ws[2];
+    int sx;
+    int sy;
+};
+// 2nd Structure
+struct gol * gol_alloc(int sx, int sy)
+{
+    struct gol *g = (struct gol *)malloc(sizeof(struct gol));
+    if (!g)
+        return NULL;
     g->k = (bool *)malloc(2 * sx * sy * sizeof(bool));
-    if (!g->k) { 
-    return 0;
+    if (!g->k) {
+        free(g);
+        return NULL;
     }
     g->sx = sx;
     g->sy = sy;
     g->ws[CW] = g->k;
     g->ws[NW] = g->k + sx * sy;
-    return 1;
+    return g;
 }
-// 2nd Function
+// FUNCTIONS
+// 1st Function
 void gol_free(struct gol *g)
 {
     free(g->k);
+    free(g);
 }
-// 3rd Function
+// 2nd Function
 void gol_init(struct gol *g)
 {
     for (int x = 0; x < g->sx; x++) {
@@ -48,7 +63,7 @@ void gol_init(struct gol *g)
             set_cell(g, CW, 2, 1, 1);
             set_cell(g, CW, 2, 2, 1);
 }
-// 4th Function
+// 3rd Function
 void gol_print(struct gol *g)
 {
     for (int x = 0; x < g->sx; x++) {
@@ -58,7 +73,7 @@ void gol_print(struct gol *g)
         printf("\n");
     }
 }
-// 5th Function
+// 4th Function
 // an = aive neighbors;
 void gol_step(struct gol *g)
 {
